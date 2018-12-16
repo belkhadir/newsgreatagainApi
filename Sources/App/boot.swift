@@ -5,20 +5,20 @@ import PostgreSQL
 /// Called after your application has initialized.
 public func boot(_ app: Application) throws {
     // your code here
-//    let connectionPool = try app.connectionPool(to: .psql)
-//    
-//    _ = connectionPool.withConnection { connection -> Future<Void> in
-//        
-//        Jobs.add(interval: .seconds(2 * 60)) {
-//            fetchFromInternet(connection)
-//        }
-//        
-//        Jobs.add(interval: .seconds(30*60)) {
-//            SharedPage.shared.page = 0
-//        }
-//        
-//        return app.eventLoop.future()
-//    }
+    let connectionPool = try app.connectionPool(to: .psql)
+    
+    _ = connectionPool.withConnection { connection -> Future<Void> in
+        
+        Jobs.add(interval: .seconds(2 * 60)) {
+            fetchFromInternet(connection)
+        }
+        
+        Jobs.add(interval: .seconds(30*60)) {
+            SharedPage.shared.page = 0
+        }
+        
+        return app.eventLoop.future()
+    }
 }
 
 func getNewsEveryMinute(minute: Double, completion: @escaping ()-> Void) {
