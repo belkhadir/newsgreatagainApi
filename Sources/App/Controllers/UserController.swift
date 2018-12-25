@@ -83,7 +83,9 @@ final class UserController: RouteCollection {
         return  try req.content.decode(User.self).flatMap { userInfo in
             return User.query(on: req).filter(\.email == userInfo.email).first().flatMap { fetchedUser in
                 if fetchedUser == nil {
-                    let user = User(email: userInfo.email, password: "", fullName: userInfo.fullName)
+                    let hasher = try req.make(BCryptDigest.self)
+                    let passwordHashed = try hasher.hash(userInfo.passowrd)
+                    let user = User(email: userInfo.email, password: passwordHashed, fullName: userInfo.fullName)
                     _ = user.save(on: req)
                 }
                 return try self.login(req)
