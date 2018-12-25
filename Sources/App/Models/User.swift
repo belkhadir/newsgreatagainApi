@@ -14,9 +14,11 @@ final class User: PostgreSQLModel {
     // TODO: Rename the password when the app is live
     var passowrd: String
     var email: String
-    init(email: String, password: String) {
+    var fullName: String
+    init(email: String, password: String, fullName: String) {
         self.email = email
         self.passowrd = password
+        self.fullName = fullName
     }
 }
 

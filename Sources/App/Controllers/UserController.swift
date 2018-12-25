@@ -15,7 +15,8 @@ final class UserController: RouteCollection {
     func boot(router: Router) throws {
         router.post("register", use: register)
         router.post("login", use: login)
-        router.get("users", use: getAllUser)
+        router.post("loginSocial", use: registerWithThird)
+        
         let tokenAuthenticationMiddleware = User.tokenAuthMiddleware()
         let authRoutes = router.grouped(tokenAuthenticationMiddleware)
         authRoutes.get("logout", use: logout)
@@ -27,7 +28,7 @@ final class UserController: RouteCollection {
         return try req.content.decode(User.self).flatMap { user in
             let hasher = try req.make(BCryptDigest.self)
             let passwordHashed = try hasher.hash(user.passowrd)
-            let newUser = User(email: user.email, password: passwordHashed)
+            let newUser = User(email: user.email, password: passwordHashed, fullName: user.fullName)
             return newUser.save(on: req).map { storedUser in
                 return User.Public(id:  try storedUser.requireID(), email: storedUser.email)
             }
@@ -76,5 +77,17 @@ final class UserController: RouteCollection {
     
     func getAllUser(_ req: Request) throws -> Future<[User]> {
         return User.query(on: req).all()
+    }
+    
+    func registerWithThird(_ req: Request) throws -> Future<Token> {
+        return  try req.content.decode(User.self).flatMap { userInfo in
+            return User.query(on: req).filter(\.email == userInfo.email).first().flatMap { fetchedUser in
+                if fetchedUser == nil {
+                    let user = User(email: userInfo.email, password: "", fullName: userInfo.fullName)
+                    _ = user.save(on: req)
+                }
+                return try self.login(req)
+            }
+        }
     }
 }
