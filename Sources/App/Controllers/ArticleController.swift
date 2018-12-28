@@ -38,7 +38,7 @@ struct ArticleController:  RouteCollection {
 //    }
     
     func getNews(_ req: Request) throws -> Future<Paginated<Article>> {
-        return try Article.query(on: req).paginate(for: req)
+        return try Article.query(on: req).groupBy(\.title).paginate(for: req)
     }
     
 //    func saveNews(_ req: Request, articles: [Article]) {

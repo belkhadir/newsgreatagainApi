@@ -34,4 +34,6 @@ final class UserArticlePivot: PostgreSQLUUIDPivot, ModifiablePivot {
     
 }
 
-extension UserArticlePivot: Migration {}
+extension UserArticlePivot: Migration {
+    
+}

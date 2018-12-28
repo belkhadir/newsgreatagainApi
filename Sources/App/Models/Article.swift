@@ -35,4 +35,14 @@ extension Article {
 extension Article: Content {}
 extension Article: Paginatable {}
 extension Article: Parameter { }
-extension Article: Migration {}
+extension Article: Migration {
+    static func prepare(on connection: PostgreSQLConnection) -> Future<Void> {
+        // 1
+        return Database.create(self, on: connection) { builder in
+            // 2
+            try addProperties(to: builder)
+            // 3
+            builder.unique(on: \.title)
+        }
+    }
+}

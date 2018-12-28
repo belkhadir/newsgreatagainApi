@@ -15,7 +15,7 @@ final class UserController: RouteCollection {
     func boot(router: Router) throws {
         router.post("register", use: register)
         router.post("login", use: login)
-        router.post("loginSocial", use: registerWithThird)
+//        router.post("loginSocial", use: registerWithThird)
         
         let tokenAuthenticationMiddleware = User.tokenAuthMiddleware()
         let authRoutes = router.grouped(tokenAuthenticationMiddleware)
@@ -71,7 +71,7 @@ final class UserController: RouteCollection {
     
     func getFavorite(_ req: Request) throws -> Future<Paginated<Article>> {
         return try req.parameters.next(User.self).flatMap(to: Paginated<Article>.self) { user in
-            try user.favorite.query(on: req).paginate(for: req)
+            try user.favorite.query(on: req).groupBy(\.title).paginate(for: req)
         }
     }
     
@@ -79,17 +79,17 @@ final class UserController: RouteCollection {
         return User.query(on: req).all()
     }
     
-    func registerWithThird(_ req: Request) throws -> Future<Token> {
-        return  try req.content.decode(User.self).flatMap { userInfo in
-            return User.query(on: req).filter(\.email == userInfo.email).first().flatMap { fetchedUser in
-                if fetchedUser == nil {
-                    let hasher = try req.make(BCryptDigest.self)
-                    let passwordHashed = try hasher.hash(userInfo.passowrd)
-                    let user = User(email: userInfo.email, password: passwordHashed, fullName: userInfo.fullName)
-                    _ = user.save(on: req)
-                }
-                return try self.login(req)
-            }
-        }
-    }
+//    func registerWithThird(_ req: Request) throws -> Future<Token> {
+//        return  try req.content.decode(User.self).flatMap { userInfo in
+//            return User.query(on: req).filter(\.email == userInfo.email).first().flatMap { fetchedUser in
+//                if fetchedUser == nil {
+//                    let hasher = try req.make(BCryptDigest.self)
+//                    let passwordHashed = try hasher.hash(userInfo.passowrd)
+//                    let user = User(email: userInfo.email, password: passwordHashed, fullName: userInfo.fullName)
+//                    _ = user.save(on: req)
+//                }
+//                return try self.login(req)
+//            }
+//        }
+//    }
 }
