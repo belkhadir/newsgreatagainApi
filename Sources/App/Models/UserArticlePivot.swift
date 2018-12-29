@@ -41,4 +41,7 @@ final class UserArticlePivot: PostgreSQLUUIDPivot, ModifiablePivot {
 
 extension UserArticlePivot: Migration {
     
+    static func revert(on connection: PostgreSQLConnection) -> Future<Void> {
+        return Database.delete(self, on: connection)
+    }
 }

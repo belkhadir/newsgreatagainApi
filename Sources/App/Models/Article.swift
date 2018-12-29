@@ -45,4 +45,8 @@ extension Article: Migration {
             builder.unique(on: \.title)
         }
     }
+    
+    static func revert(on connection: PostgreSQLConnection) -> Future<Void> {
+        return Database.delete(self, on: connection)
+    }
 }

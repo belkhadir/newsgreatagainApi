@@ -43,6 +43,10 @@ extension Token: Authentication.Token {
     }
 }
 
-extension Token: Migration {}
+extension Token: Migration {
+    static func revert(on connection: PostgreSQLConnection) -> Future<Void> {
+        return Database.delete(self, on: connection)
+    }
+}
 extension Token: Content {}
 

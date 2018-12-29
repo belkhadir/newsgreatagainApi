@@ -33,6 +33,10 @@ extension User: Migration {
                 builder.unique(on: \.email)
             }
     }
+    
+    static func revert(on connection: PostgreSQLConnection) -> Future<Void> {
+        return Database.delete(self, on: connection)
+    }
 }
 extension User: TokenAuthenticatable {
     typealias TokenType = Token
