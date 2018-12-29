@@ -12,42 +12,35 @@ import FluentPostgreSQL
 
 struct ArticleController:  RouteCollection {
     func boot(router: Router) throws {
-//        router.get("remotenews", use: getMoreNews)
         router.get("news", use: getNews)
+        
+        let tokenAuthenticationMiddleware = User.tokenAuthMiddleware()
+        let authRoutes = router.grouped(tokenAuthenticationMiddleware)
+        authRoutes.get(User.parameter,"news",use: filteredNews)
     }
-    
-    
-    // TODO : 1- order article by date and get the lates one
-    //        2- check the date of the article by the current date
-    //           if it's the latest date is upper than the current date by 15 hour added
-    //           then fetch from the server the articles via newsAPI
-    //        3- save the article fetched from the api
-    
-    
-
-    
-//    func getMoreNews(_ req: Request) throws -> Future<[Article]> {
-//        ArticleController.page = ArticleController.page + 1
-//        return try req.client()
-//            .get("https://newsapi.org/v2/top-headlines?pageSize=100&page=\(ArticleController.page)&country=us&apiKey=7c5b1415d49543dba843f2d1d385a084")
-//            .map(to: [Article].self) { response in
-//                let news = try response.content.syncDecode(News.self)
-//                self.saveNews(req, articles: news.articles)
-//                return news.articles
-//        }
-//    }
     
     func getNews(_ req: Request) throws -> Future<Paginated<Article>> {
         return try Article.query(on: req).groupBy(\.title).paginate(for: req)
     }
     
-//    func saveNews(_ req: Request, articles: [Article]) {
-//        _ = articles.map { article -> Future<Article>? in
-//            return article.save(on: req)
-//        }
-//    }
+    /*
+        SELECT *
+        FROM ARTICLE AS A1
+        EXCEPT
+        SELECT A2.ID
+        FROM ARTICLE AS A2 WHERE A2.ID IN (
+            SELECT articleID, userID
+            from USERARTICLEPIVOT
+            WHERE userID == id
+        )
+     */
+    func filteredNews(_ req: Request) throws -> Future<Paginated<Article>> {
+        let user = try req.requireAuthenticated(User.self)
+        let id = try user.requireID()
+        return try Article.query(on: req)
+            .join(\Article.id, to: \UserArticlePivot.articleID)
+            .filter(\UserArticlePivot.userID != id).paginate(for: req)
+    }
     
-    
-
 }
     

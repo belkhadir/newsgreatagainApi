@@ -20,8 +20,10 @@ final class UserController: RouteCollection {
         let tokenAuthenticationMiddleware = User.tokenAuthMiddleware()
         let authRoutes = router.grouped(tokenAuthenticationMiddleware)
         authRoutes.get("logout", use: logout)
-        authRoutes.post(User.parameter, "favorite", Article.parameter, use: addFavorite)
+        authRoutes.post(User.parameter, "favorite", Article.parameter,use: addFavorite)
+        authRoutes.post(User.parameter, "unfavorite", Article.parameter ,use: addUnFavorite)
         authRoutes.get(User.parameter, "favorite", use: getFavorite)
+        
     }
     
     func register(_ req: Request) throws -> Future<User.Public> {
@@ -65,13 +67,26 @@ final class UserController: RouteCollection {
     
     func addFavorite(_ req: Request) throws -> Future<HTTPStatus> {
         return try flatMap(to: HTTPStatus.self, req.parameters.next(User.self), req.parameters.next(Article.self), { user, article in
-            return user.favorite.attach(article, on: req).transform(to: .created)
+            let favorite = try UserArticlePivot(article, user, favorite: true)
+            return favorite.save(on: req).transform(to: .created)
+//            return user.favorite.attach(article, on: req).transform(to: .created)
         })
     }
     
+    func addUnFavorite(_ req: Request) throws -> Future<HTTPStatus> {
+        return try flatMap(to: HTTPStatus.self, req.parameters.next(User.self), req.parameters.next(Article.self), { user, article in
+            let unfavorite = try UserArticlePivot(article, user, favorite: false)
+            return unfavorite.save(on: req).transform(to: .created)
+        })
+    }
+    
+    
     func getFavorite(_ req: Request) throws -> Future<Paginated<Article>> {
         return try req.parameters.next(User.self).flatMap(to: Paginated<Article>.self) { user in
-            try user.favorite.query(on: req).groupBy(\.title).paginate(for: req)
+            try user.favorite.query(on: req)
+                .join(\Article.id, to: \UserArticlePivot.articleID)
+                .filter(\UserArticlePivot.favorite == true)
+                .paginate(for: req)
         }
     }
     

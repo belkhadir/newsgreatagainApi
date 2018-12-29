@@ -15,7 +15,7 @@ final class UserArticlePivot: PostgreSQLUUIDPivot, ModifiablePivot {
 
     var articleID: Article.ID
     var userID: User.ID
-    
+    var favorite: Bool? = nil
     var date: Date?
     
     typealias Left = Article
@@ -29,6 +29,11 @@ final class UserArticlePivot: PostgreSQLUUIDPivot, ModifiablePivot {
         self.articleID = try left.requireID()
         self.userID = try right.requireID()
         date = Date()
+    }
+    
+    convenience init(_ left: Article, _ right: User, favorite: Bool = false) throws  {
+        try self.init(left, right)
+        self.favorite = favorite
     }
     
     
