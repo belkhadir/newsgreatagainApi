@@ -12,12 +12,12 @@ import Authentication
 final class User: PostgreSQLModel {
     var id: Int?
     // TODO: Rename the password when the app is live
-    var passowrd: String
+    var password: String
     var email: String
     var fullName: String
     init(email: String, password: String, fullName: String) {
         self.email = email
-        self.passowrd = password
+        self.password = password
         self.fullName = fullName
     }
 }

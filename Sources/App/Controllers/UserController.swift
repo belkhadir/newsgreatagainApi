@@ -23,13 +23,12 @@ final class UserController: RouteCollection {
         authRoutes.post(User.parameter, "favorite", Article.parameter,use: addFavorite)
         authRoutes.post(User.parameter, "unfavorite", Article.parameter ,use: addUnFavorite)
         authRoutes.get(User.parameter, "favorite", use: getFavorite)
-        
     }
     
     func register(_ req: Request) throws -> Future<User.Public> {
         return try req.content.decode(User.self).flatMap { user in
             let hasher = try req.make(BCryptDigest.self)
-            let passwordHashed = try hasher.hash(user.passowrd)
+            let passwordHashed = try hasher.hash(user.password)
             let newUser = User(email: user.email, password: passwordHashed, fullName: user.fullName)
             return newUser.save(on: req).map { storedUser in
                 return User.Public(id:  try storedUser.requireID(), email: storedUser.email)
@@ -44,7 +43,7 @@ final class UserController: RouteCollection {
                     throw Abort(HTTPStatus.notFound)
                 }
                 let hasher = try req.make(BCryptDigest.self)
-                if try hasher.verify(user.passowrd, created: existingUser.passowrd) {
+                if try hasher.verify(user.password, created: existingUser.password) {
                     let tokenString = try URandom().generateData(count: 32).base32EncodedString()
                     let token = try Token(token: tokenString, userID: existingUser.requireID())
                     return token.save(on: req)

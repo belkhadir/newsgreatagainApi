@@ -7,7 +7,6 @@
 
 import Vapor
 import Pagination
-import Jobs
 import FluentPostgreSQL
 
 struct ArticleController:  RouteCollection {
