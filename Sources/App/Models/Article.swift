@@ -19,7 +19,11 @@ final class Article: PostgreSQLModel {
     var urlToImage: String?
     let publishedAt: String?
     var content: String?
- 
+    
+    static var createdAtKey: TimestampKey? = \.createdAt
+    static var updatedAtKey: TimestampKey? = \.updatedAt
+    var createdAt: Date?
+    var updatedAt: Date?
     
 }
 
@@ -28,7 +32,9 @@ extension Article {
         guard let string = publishedAt else {
             return nil
         }
-        return Date(rfc1123: string)
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
+        return dateFormatter.date(from: string)
     }
 }
 
@@ -43,6 +49,9 @@ extension Article: Migration {
             try addProperties(to: builder)
             // 3
             builder.unique(on: \.title)
+            
+            builder.field(for: \.createdAt)
+            builder.field(for: \.updatedAt)
         }
     }
     

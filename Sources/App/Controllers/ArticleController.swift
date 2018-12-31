@@ -19,7 +19,12 @@ struct ArticleController:  RouteCollection {
     }
     
     func getNews(_ req: Request) throws -> Future<Paginated<Article>> {
-        return try Article.query(on: req).groupBy(\.title).paginate(for: req)
+        
+        let query = Article.query(on: req)
+        query.group(.or) { builder in
+
+        }
+        return try query.paginate(for: req)
     }
     
     /*
@@ -36,6 +41,18 @@ struct ArticleController:  RouteCollection {
     func filteredNews(_ req: Request) throws -> Future<Paginated<Article>> {
         let user = try req.requireAuthenticated(User.self)
         let id = try user.requireID()
+//        let allArticle = Article.query(on: req).all()
+//        let userPivot = UserArticlePivot.query(on: req).filter(\UserArticlePivot.userID == id).all()
+//        let newArticles = [Article]()
+//        return allArticle.flatMap({ articles -> Future<Paginated<Article>> in
+//            for element in articles {
+//                for pivot in userPivot {
+//
+//                }
+//            }
+//            return newArticles
+//        })
+        
         return try Article.query(on: req)
             .join(\Article.id, to: \UserArticlePivot.articleID)
             .filter(\UserArticlePivot.userID != id).paginate(for: req)

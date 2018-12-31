@@ -15,6 +15,13 @@ final class User: PostgreSQLModel {
     var password: String
     var email: String
     var fullName: String
+    
+    var createdAt: Date?
+    var updatedAt: Date?
+    
+    static var createdAtKey: TimestampKey? = \.createdAt
+    static var updatedAtKey: TimestampKey? = \.updatedAt
+    
     init(email: String, password: String, fullName: String) {
         self.email = email
         self.password = password
@@ -31,6 +38,9 @@ extension User: Migration {
                 try addProperties(to: builder)
                 // 3
                 builder.unique(on: \.email)
+                
+                builder.field(for: \.createdAt)
+                builder.field(for: \.updatedAt)
             }
     }
     
@@ -52,3 +62,5 @@ extension User {
         return siblings()
     }
 }
+
+

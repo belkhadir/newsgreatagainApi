@@ -41,6 +41,15 @@ final class UserArticlePivot: PostgreSQLUUIDPivot, ModifiablePivot {
 
 extension UserArticlePivot: Migration {
     
+    static func prepare(on connection: PostgreSQLConnection) -> Future<Void> {
+        
+        return Database.create(self, on: connection) { builder in
+            try addProperties(to: builder)
+            builder.reference(from: \.articleID, to: \Article.id, onDelete: .cascade)
+            builder.reference(from: \.userID, to: \User.id, onDelete: .cascade)
+        }
+        
+    }
     static func revert(on connection: PostgreSQLConnection) -> Future<Void> {
         return Database.delete(self, on: connection)
     }

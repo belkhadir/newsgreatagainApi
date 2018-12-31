@@ -1,6 +1,7 @@
 import FluentPostgreSQL
 import Vapor
 import Authentication
+import AdminPanelProvider
 
 /// Called before your application initializes.
 public func configure(_ config: inout Config, _ env: inout Environment, _ services: inout Services) throws {
@@ -22,12 +23,15 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     // Configure a SQLite database
     var databases = DatabasesConfig()
 
-    let databaseConfig = PostgreSQLDatabaseConfig(hostname: "127.0.0.1", port: 5432, username: "newsgreatagain", database: "newsgreatagain", password: "password", transport: .cleartext)
+    let databaseConfig = PostgreSQLDatabaseConfig(hostname: "127.0.0.1", port: 5432, username: "newsgreatagain", database: "newsgreatagain", password: nil, transport: .cleartext)
     let database = PostgreSQLDatabase(config: databaseConfig)
     databases.add(database: database, as: .psql)
     services.register(databases)
     
-
+    var commands = CommandConfig.default()
+    commands.useFluentCommands()
+    services.register(commands)
+    
     /// Configure migrations
     var migrations = MigrationConfig()
     migrations.add(model: User.self, database: .psql)
@@ -37,4 +41,6 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     migrations.add(model: UserArticlePivot.self, database: .psql)
     services.register(migrations)
 
+    try addProvider(AdminPanelProvider.Provider.self)
+    try addProvider(FluentProvider.Provider.self)
 }
