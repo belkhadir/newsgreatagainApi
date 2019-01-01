@@ -15,21 +15,24 @@ final class UserController: RouteCollection {
     func boot(router: Router) throws {
         router.post("register", use: register)
         router.post("login", use: login)
-//        router.post("loginSocial", use: registerWithThird)
-        
+    
         let tokenAuthenticationMiddleware = User.tokenAuthMiddleware()
         let authRoutes = router.grouped(tokenAuthenticationMiddleware)
         authRoutes.get("logout", use: logout)
-        authRoutes.post(User.parameter, "favorite", Article.parameter,use: addFavorite)
+        authRoutes.post(User.parameter, "addfavorite", Article.parameter,use: addFavorite)
         authRoutes.post(User.parameter, "unfavorite", Article.parameter ,use: addUnFavorite)
         authRoutes.get(User.parameter, "favorite", use: getFavorite)
+    
     }
     
     func register(_ req: Request) throws -> Future<User.Public> {
         return try req.content.decode(User.self).flatMap { user in
             let hasher = try req.make(BCryptDigest.self)
             let passwordHashed = try hasher.hash(user.password)
-            let newUser = User(email: user.email, password: passwordHashed, fullName: user.fullName)
+            guard let fullName = user.fullName else {
+                throw Abort(HTTPStatus.notFound)
+            }
+            let newUser = User(email: user.email, password: passwordHashed, fullName: fullName)
             return newUser.save(on: req).map { storedUser in
                 return User.Public(id:  try storedUser.requireID(), email: storedUser.email)
             }
@@ -80,30 +83,35 @@ final class UserController: RouteCollection {
     }
     
     
+//    func getFavorite(_ req: Request) throws -> Future<[Article]> {
+//        return try req.parameters.next(User.self).flatMap(to: [Article].self) { user in
+//            guard let id  = user.id else {
+//                throw Abort(HTTPStatus.notFound)
+//            }
+//            return req.withPooledConnection(to: .psql) { conn in
+//                return conn
+//                    .raw("Select * From \"Article\" as Ar where Ar.id in (select UA.articleid From  \"Article_User\" as UA where UA.userid = \(id) and UA.favorite = \(true) group by UA.userid, UA.articleid)").all(decoding: Article.self)
+//            }
+//        }
+//    }
+    
     func getFavorite(_ req: Request) throws -> Future<Paginated<Article>> {
         return try req.parameters.next(User.self).flatMap(to: Paginated<Article>.self) { user in
-            try user.favorite.query(on: req)
-                .join(\Article.id, to: \UserArticlePivot.articleID)
-                .filter(\UserArticlePivot.favorite == true)
-                .paginate(for: req)
+            guard let id  = user.id else {
+                throw Abort(HTTPStatus.notFound)
+            }
+            return try Article.query(on: req)
+            .join(\UserArticlePivot.articleid, to: \Article.id)
+            .filter(\UserArticlePivot.favorite == true)
+            .filter(\UserArticlePivot.userid == id)
+            .paginate(for: req)
         }
     }
+
     
     func getAllUser(_ req: Request) throws -> Future<[User]> {
         return User.query(on: req).all()
     }
     
-//    func registerWithThird(_ req: Request) throws -> Future<Token> {
-//        return  try req.content.decode(User.self).flatMap { userInfo in
-//            return User.query(on: req).filter(\.email == userInfo.email).first().flatMap { fetchedUser in
-//                if fetchedUser == nil {
-//                    let hasher = try req.make(BCryptDigest.self)
-//                    let passwordHashed = try hasher.hash(userInfo.passowrd)
-//                    let user = User(email: userInfo.email, password: passwordHashed, fullName: userInfo.fullName)
-//                    _ = user.save(on: req)
-//                }
-//                return try self.login(req)
-//            }
-//        }
-//    }
+
 }

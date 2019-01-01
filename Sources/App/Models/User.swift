@@ -14,13 +14,7 @@ final class User: PostgreSQLModel {
     // TODO: Rename the password when the app is live
     var password: String
     var email: String
-    var fullName: String
-    
-    var createdAt: Date?
-    var updatedAt: Date?
-    
-    static var createdAtKey: TimestampKey? = \.createdAt
-    static var updatedAtKey: TimestampKey? = \.updatedAt
+    var fullName: String?
     
     init(email: String, password: String, fullName: String) {
         self.email = email
@@ -39,8 +33,6 @@ extension User: Migration {
                 // 3
                 builder.unique(on: \.email)
                 
-                builder.field(for: \.createdAt)
-                builder.field(for: \.updatedAt)
             }
     }
     

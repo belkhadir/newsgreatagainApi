@@ -16,47 +16,36 @@ struct ArticleController:  RouteCollection {
         let tokenAuthenticationMiddleware = User.tokenAuthMiddleware()
         let authRoutes = router.grouped(tokenAuthenticationMiddleware)
         authRoutes.get(User.parameter,"news",use: filteredNews)
+        authRoutes.get(User.parameter, "filteredNewsV2", use: filteredNewsV2)
     }
     
     func getNews(_ req: Request) throws -> Future<Paginated<Article>> {
-        
-        let query = Article.query(on: req)
-        query.group(.or) { builder in
-
+        return try Article.query(on: req).paginate(for: req)
+    }
+    
+    func filteredNews(_ req: Request) throws -> Future<[Article]> {
+        return try req.parameters.next(User.self).flatMap(to: [Article].self) { user in
+            guard let id  = user.id else {
+                throw Abort(HTTPStatus.notFound)
+            }
+            return req.withPooledConnection(to: .psql) { conn in
+                return conn
+                    .raw("Select * From \"Article\" as Ar where Ar.id not in (select UA.articleid From  \"Article_User\" as UA where UA.userid = \(id) group by UA.userid, UA.articleid)").all(decoding: Article.self)
+            }
         }
-        return try query.paginate(for: req)
     }
     
-    /*
-        SELECT *
-        FROM ARTICLE AS A1
-        EXCEPT
-        SELECT A2.ID
-        FROM ARTICLE AS A2 WHERE A2.ID IN (
-            SELECT articleID, userID
-            from USERARTICLEPIVOT
-            WHERE userID == id
-        )
-     */
-    func filteredNews(_ req: Request) throws -> Future<Paginated<Article>> {
-        let user = try req.requireAuthenticated(User.self)
-        let id = try user.requireID()
-//        let allArticle = Article.query(on: req).all()
-//        let userPivot = UserArticlePivot.query(on: req).filter(\UserArticlePivot.userID == id).all()
-//        let newArticles = [Article]()
-//        return allArticle.flatMap({ articles -> Future<Paginated<Article>> in
-//            for element in articles {
-//                for pivot in userPivot {
-//
-//                }
-//            }
-//            return newArticles
-//        })
-        
-        return try Article.query(on: req)
-            .join(\Article.id, to: \UserArticlePivot.articleID)
-            .filter(\UserArticlePivot.userID != id).paginate(for: req)
+    func filteredNewsV2(_ req: Request) throws -> Future<Paginated<Article>> {
+        return try req.parameters.next(User.self).flatMap(to: Paginated<Article>.self) { user in
+            guard let id  = user.id else {
+                throw Abort(HTTPStatus.notFound)
+            }
+            return try Article.query(on: req)
+            .join(\UserArticlePivot.articleid, to: \Article.id)
+            .filter(\UserArticlePivot.userid, .equal, id)
+            .paginate(for: req)
+            
+        }
     }
-    
 }
     

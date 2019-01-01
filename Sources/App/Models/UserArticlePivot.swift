@@ -13,8 +13,8 @@ final class UserArticlePivot: PostgreSQLUUIDPivot, ModifiablePivot {
     
     var id: UUID?
 
-    var articleID: Article.ID
-    var userID: User.ID
+    var articleid: Article.ID
+    var userid: User.ID
     var favorite: Bool? = nil
     var date: Date?
     
@@ -22,12 +22,12 @@ final class UserArticlePivot: PostgreSQLUUIDPivot, ModifiablePivot {
     typealias Right = User
     
     
-    static var leftIDKey: WritableKeyPath<UserArticlePivot, Int> = \.articleID
-    static var rightIDKey: WritableKeyPath<UserArticlePivot, Int> = \.userID
+    static var leftIDKey: WritableKeyPath<UserArticlePivot, Int> = \.articleid
+    static var rightIDKey: WritableKeyPath<UserArticlePivot, Int> = \.userid
 
     init(_ left: Article, _ right: User) throws {
-        self.articleID = try left.requireID()
-        self.userID = try right.requireID()
+        self.articleid = try left.requireID()
+        self.userid = try right.requireID()
         date = Date()
     }
     
@@ -45,8 +45,8 @@ extension UserArticlePivot: Migration {
         
         return Database.create(self, on: connection) { builder in
             try addProperties(to: builder)
-            builder.reference(from: \.articleID, to: \Article.id, onDelete: .cascade)
-            builder.reference(from: \.userID, to: \User.id, onDelete: .cascade)
+            builder.reference(from: \.articleid, to: \Article.id, onDelete: .cascade)
+            builder.reference(from: \.userid, to: \User.id, onDelete: .cascade)
         }
         
     }

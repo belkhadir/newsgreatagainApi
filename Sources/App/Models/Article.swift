@@ -20,11 +20,6 @@ final class Article: PostgreSQLModel {
     let publishedAt: String?
     var content: String?
     
-    static var createdAtKey: TimestampKey? = \.createdAt
-    static var updatedAtKey: TimestampKey? = \.updatedAt
-    var createdAt: Date?
-    var updatedAt: Date?
-    
 }
 
 extension Article {
@@ -49,9 +44,6 @@ extension Article: Migration {
             try addProperties(to: builder)
             // 3
             builder.unique(on: \.title)
-            
-            builder.field(for: \.createdAt)
-            builder.field(for: \.updatedAt)
         }
     }
     
