@@ -22,7 +22,7 @@ final class UserController: RouteCollection {
         authRoutes.post(User.parameter, "addfavorite", Article.parameter,use: addFavorite)
         authRoutes.post(User.parameter, "unfavorite", Article.parameter ,use: addUnFavorite)
         authRoutes.get(User.parameter, "favorite", use: getFavorite)
-        authRoutes.get(User.parameter, "referal", User.parameter, use: addReferal)
+        authRoutes.post(User.parameter, "referal", User.parameter, use: addReferal)
     }
     
     func register(_ req: Request) throws -> Future<User.Public> {
