@@ -42,9 +42,9 @@ struct ArticleController:  RouteCollection {
             }
             return try Article.query(on: req)
             .join(\UserArticlePivot.articleid, to: \Article.id)
-            .filter(\UserArticlePivot.userid, .equal, id)
+//            .groupBy(\UserArticlePivot.articleid)
+            .filter(\UserArticlePivot.userid, .notEqual, id)
             .paginate(for: req)
-            
         }
     }
 }

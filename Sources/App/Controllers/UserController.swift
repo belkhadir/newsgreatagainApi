@@ -22,7 +22,7 @@ final class UserController: RouteCollection {
         authRoutes.post(User.parameter, "addfavorite", Article.parameter,use: addFavorite)
         authRoutes.post(User.parameter, "unfavorite", Article.parameter ,use: addUnFavorite)
         authRoutes.get(User.parameter, "favorite", use: getFavorite)
-    
+        authRoutes.get(User.parameter, "referal", User.parameter, use: addReferal)
     }
     
     func register(_ req: Request) throws -> Future<User.Public> {
@@ -113,5 +113,14 @@ final class UserController: RouteCollection {
         return User.query(on: req).all()
     }
     
+    
+    func addReferal(_ req: Request) throws -> Future<HTTPStatus> {
+        return try flatMap(to: HTTPStatus.self,
+                          req.parameters.next(User.self),
+                          req.parameters.next(User.self), { user, invited in
+                            let referal = try Referal(user, invited)
+                            return  referal.save(on: req).transform(to: .created)
+        })
+    }
 
 }

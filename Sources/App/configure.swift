@@ -39,6 +39,8 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     
     migrations.add(model: Token.self, database: .psql)
     migrations.add(model: UserArticlePivot.self, database: .psql)
+    migrations.add(model: Referal.self, database: .psql)
+    
     services.register(migrations)
 
 }

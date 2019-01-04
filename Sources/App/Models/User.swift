@@ -53,6 +53,10 @@ extension User {
     var favorite: Siblings<User, Article, UserArticlePivot> {
         return siblings()
     }
+    
+//    var invite: Siblings<User, User, Referal> {
+//        return siblings(\uS, <#T##relatedPivotField: WritableKeyPath<Pivot, ID>##WritableKeyPath<Pivot, ID>#>)
+//    }
 }
 
 
