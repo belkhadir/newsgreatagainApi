@@ -25,8 +25,11 @@ final class Referal: PostgreSQLUUIDPivot, ModifiablePivot {
     static var rightIDKey: WritableKeyPath<Referal, Int> = \.inveted
     
     init(_ left: User, _ right: User) throws {
-        self.userid = try left.requireID()
-        self.inveted = try right.requireID()
+        guard let newUserId = left.id, let invitedID = right.id  else {
+            throw Abort(HTTPStatus.notFound)
+        }
+        self.userid = newUserId
+        self.inveted = invitedID
         date = Date()
     }
     
