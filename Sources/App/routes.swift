@@ -9,4 +9,7 @@ public func routes(_ router: Router) throws {
     let articleController = ArticleController()
     try router.register(collection: articleController)
     
+    let websiteController = WebsiteController()
+    try router.register(collection: websiteController)
+    
 }
