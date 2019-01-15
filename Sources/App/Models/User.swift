@@ -14,7 +14,7 @@ final class User: PostgreSQLModel {
     // TODO: Rename the password when the app is live
     var password: String
     var email: String
-    var fullName: String?
+    var fullName: String
     
     init(email: String, password: String, fullName: String) {
         self.email = email
@@ -48,10 +48,15 @@ extension User {
     struct Public: Content {
         let id: Int
         let email: String
+        let fullName: String
     }
     
     var favorite: Siblings<User, Article, UserArticlePivot> {
         return siblings()
+    }
+    
+    var orders: Children<User, Order> {
+        return children(\.userid)
     }
     
 //    var invite: Siblings<User, User, Referal> {

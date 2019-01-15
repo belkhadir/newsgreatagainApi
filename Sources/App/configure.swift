@@ -1,6 +1,7 @@
 import FluentPostgreSQL
 import Vapor
 import Authentication
+import Leaf
 
 
 /// Called before your application initializes.
@@ -23,7 +24,7 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     // Configure a SQLite database
     var databases = DatabasesConfig()
 
-    let databaseConfig = PostgreSQLDatabaseConfig(hostname: "127.0.0.1", port: 5432, username: "newsgreatagain", database: "newsgreatagain", password: "password", transport: .cleartext)
+    let databaseConfig = PostgreSQLDatabaseConfig(hostname: "127.0.0.1", port: 5432, username: "newsgreatagain", database: "newsgreatagain", password: nil, transport: .cleartext)
     let database = PostgreSQLDatabase(config: databaseConfig)
     databases.add(database: database, as: .psql)
     services.register(databases)
@@ -31,7 +32,7 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     var commands = CommandConfig.default()
     commands.useFluentCommands()
     services.register(commands)
-    
+    try services.register(LeafProvider())
     /// Configure migrations
     var migrations = MigrationConfig()
     migrations.add(model: User.self, database: .psql)
@@ -40,7 +41,9 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     migrations.add(model: Token.self, database: .psql)
     migrations.add(model: UserArticlePivot.self, database: .psql)
     migrations.add(model: Referal.self, database: .psql)
+    migrations.add(model: Order.self, database: .psql)
     
     services.register(migrations)
 
+    config.prefer(LeafRenderer.self, for: ViewRenderer.self)
 }

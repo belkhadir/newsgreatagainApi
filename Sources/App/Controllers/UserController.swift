@@ -23,18 +23,16 @@ final class UserController: RouteCollection {
         authRoutes.post(User.parameter, "unfavorite", Article.parameter ,use: addUnFavorite)
         authRoutes.get(User.parameter, "favorite", use: getFavorite)
         authRoutes.post(User.parameter, "referal", User.parameter, use: addReferal)
+        authRoutes.get(User.parameter, "orders",  use: getOrders)
     }
     
     func register(_ req: Request) throws -> Future<User.Public> {
         return try req.content.decode(User.self).flatMap { user in
             let hasher = try req.make(BCryptDigest.self)
             let passwordHashed = try hasher.hash(user.password)
-            guard let fullName = user.fullName else {
-                throw Abort(HTTPStatus.notFound)
-            }
-            let newUser = User(email: user.email, password: passwordHashed, fullName: fullName)
+            let newUser = User(email: user.email, password: passwordHashed, fullName: user.fullName)
             return newUser.save(on: req).map { storedUser in
-                return User.Public(id:  try storedUser.requireID(), email: storedUser.email)
+                return User.Public(id:  try storedUser.requireID(), email: storedUser.email, fullName: storedUser.fullName)
             }
         }
     }
@@ -123,4 +121,13 @@ final class UserController: RouteCollection {
         })
     }
 
+    func getOrders(_ req: Request) throws -> Future<[Order]> {
+        return try req.parameters.next(User.self).flatMap(to: [Order].self) { (user) in
+            return try user.orders.query(on: req).all()
+        }
+    }
+    
+//    func countReferal(_ req: Request) throws -> Future<Int> {
+//        return try User.query(on: req).join(\Referal., to: <#T##KeyPath<C, D>#>)
+//    }
 }

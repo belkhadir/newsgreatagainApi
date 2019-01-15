@@ -11,12 +11,13 @@ import FluentPostgreSQL
 
 struct ArticleController:  RouteCollection {
     func boot(router: Router) throws {
-        router.get("news", use: getNews)
+//        router.get("news", use: getNews)
         
         let tokenAuthenticationMiddleware = User.tokenAuthMiddleware()
         let authRoutes = router.grouped(tokenAuthenticationMiddleware)
+        authRoutes.get("news", use: getNews)
         authRoutes.get(User.parameter,"news",use: filteredNews)
-        authRoutes.get(User.parameter, "filteredNewsV2", use: filteredNewsV2)
+//        authRoutes.get(User.parameter, "filteredNewsV2", use: filteredNewsV2)
     }
     
     func getNews(_ req: Request) throws -> Future<Paginated<Article>> {
