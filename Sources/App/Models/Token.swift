@@ -48,6 +48,17 @@ extension Token: Authentication.Token {
 }
 
 extension Token: Migration {
+    static func prepare(on connection: PostgreSQLConnection) -> Future<Void> {
+        // 1
+        return Database.create(self, on: connection) { builder in
+            // 2
+            try addProperties(to: builder)
+            // 3
+            builder.unique(on: \.email)
+            builder.field(for: \.token)
+            builder.field(for: \.fullName)
+        }
+    }
     static func revert(on connection: PostgreSQLConnection) -> Future<Void> {
         return Database.delete(self, on: connection)
     }
