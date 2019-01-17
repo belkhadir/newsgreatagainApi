@@ -54,9 +54,9 @@ extension Token: Migration {
             // 2
             try addProperties(to: builder)
             // 3
-            builder.unique(on: \.email)
-            builder.field(for: \.token)
-            builder.field(for: \.fullName)
+//            builder.unique(on: \.email)
+//            builder.field(for: \.token)
+//            builder.field(for: \.fullName)
         }
     }
     static func revert(on connection: PostgreSQLConnection) -> Future<Void> {
