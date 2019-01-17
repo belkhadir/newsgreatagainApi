@@ -52,7 +52,10 @@ final class UserController: RouteCollection {
                 let hasher = try req.make(BCryptDigest.self)
                 if try hasher.verify(user.password, created: existingUser.password) {
                     let tokenString = try URandom().generateData(count: 32).base32EncodedString()
-                    let token = try Token(token: tokenString, userID: existingUser.requireID())
+                    guard let fullName = user.fullName else {
+                        throw Abort(HTTPStatus.notFound)
+                    }
+                    let token = try Token(token: tokenString, userID: existingUser.requireID(), fullName: fullName, email: user.email)
                     return token.save(on: req)
                 }else {
                     throw Abort(HTTPStatus.unauthorized)

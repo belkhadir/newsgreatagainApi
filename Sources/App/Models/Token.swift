@@ -13,10 +13,14 @@ final class Token: PostgreSQLModel {
     var id: Int?
     var token: String
     var userID: User.ID
+    var fullName: String
+    var email: String
     
-    init(token: String, userID: User.ID) {
+    init(token: String, userID: User.ID, fullName: String, email: String) {
         self.token = token
         self.userID = userID
+        self.fullName = fullName
+        self.email = email
     }
     
 }
