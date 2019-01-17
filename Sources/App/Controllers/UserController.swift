@@ -30,9 +30,15 @@ final class UserController: RouteCollection {
         return try req.content.decode(User.self).flatMap { user in
             let hasher = try req.make(BCryptDigest.self)
             let passwordHashed = try hasher.hash(user.password)
-            let newUser = User(email: user.email, password: passwordHashed, fullName: user.fullName)
+            guard let fullName = user.fullName else {
+                throw Abort(HTTPStatus.notFound)
+            }
+            let newUser = User(email: user.email, password: passwordHashed, fullName: fullName)
             return newUser.save(on: req).map { storedUser in
-                return User.Public(id:  try storedUser.requireID(), email: storedUser.email, fullName: storedUser.fullName)
+                guard let fullName = storedUser.fullName else {
+                    throw Abort(HTTPStatus.notFound)
+                }
+                return User.Public(id:  try storedUser.requireID(), email: storedUser.email, fullName: fullName)
             }
         }
     }
