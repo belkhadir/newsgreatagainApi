@@ -17,6 +17,7 @@ final class ContactMe: PostgreSQLModel  {
     init(email: String, fullName: String, message: String) {
         self.email = email
         self.fullName = fullName
+        self.message = message
     }
 }
 

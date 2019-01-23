@@ -17,18 +17,7 @@ struct WebsiteController: RouteCollection {
     }
     
     func createContackMe(_ req: Request, data: CreatContactMe) throws ->  Future<HTTPResponse> {
-//        guard let email = data.email else {
-//            throw Abort(.internalServerError)
-//        }
-//
-//        guard let fullName = data.fullName else {
-//            throw Abort(.internalServerError)
-//        }
-//
-//        guard let message = data.message else {
-//            throw Abort(.internalServerError)
-//        }
-        
+
         let contact = ContactMe(email: data.email, fullName: data.fullName, message: data.message)
         
         return contact.save(on: req).transform(to: HTTPResponse(status: .ok))
