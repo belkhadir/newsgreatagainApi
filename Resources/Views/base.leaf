@@ -1,0 +1,44 @@
+<!DOCTYPE HTML>
+<html lang="eng">
+    <head>
+        <title>#(title)</title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+        <link rel="stylesheet" href="/assets/css/main.css" />
+        <noscript><link rel="stylesheet" href="/assets/css/noscript.css" /></noscript>
+        <script src="assets/js/jquery.min.js"></script>
+    </head>
+    <body class="is-preload">
+        <header id="header">
+            <div class="content">
+                <h1><a href="#">News Great Again</a></h1>
+                <p>Swipe through all the breaking headlines from around the globe.<br />
+                The ultimate short and fast news app that keeps you informed<br /> without wasting your time! <br />
+                <ul class="actions">
+                    <li>
+                        <a href="#" >
+                            <img src="images/Download_on_the_App_Store_Badge_US-UK_RGB_wht_092917.svg"  width=145/>
+                        </a>
+                    </li>
+                    <li><a href="contact" class="button primary ">Contact US.</a></li>
+                </ul>
+            </div>
+            <div class="image phone"><div class="inner"><img src="images/screen.png" alt="" /></div></div>
+        </header>
+        </br>
+        <!-- Footer -->
+        <footer id="footer">
+            <ul class="icons">
+                <li><a href="#" class="icon fa-facebook"><span class="label">Facebook</span></a></li>
+                <li><a href="#" class="icon fa-twitter"><span class="label">Twitter</span></a></li>
+                <li><a href="#" class="icon fa-instagram"><span class="label">Instagram</span></a></li>
+            </ul>
+            <p class="copyright">&copy; NewsGreatAgain.</p>
+        </footer>
+    </body>
+    <script src="assets/js/jquery.scrolly.min.js"></script>
+    <script src="assets/js/browser.min.js"></script>
+    <script src="assets/js/breakpoints.min.js"></script>
+    <script src="assets/js/util.js"></script>
+    <script src="assets/js/main.js"></script>
+</html>

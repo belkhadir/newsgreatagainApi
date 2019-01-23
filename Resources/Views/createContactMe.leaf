@@ -1,26 +1,26 @@
-#set("content") {
-    <h4>Contact US.</h4>
-    <form method="post" action="#">
+<title>Contact</title>
+<center><h4>Contact US.</h4></center>
+    <form method="post" >
         <div class="row gtr-uniform">
             <div class="col-6 col-12-xsmall">
-                <input type="text" name="demo-name" id="demo-name" value="" placeholder="Name" />
+                <input type="text" name="fullName" id="demo-name" value="" placeholder="Name" />
             </div>
             <div class="col-6 col-12-xsmall">
-                <input type="email" name="demo-email" id="demo-email" value="" placeholder="Email" />
+                <input type="email" name="email" id="demo-email" value="" placeholder="Email" />
             </div>
             <div class="col-12">
-                <textarea name="demo-message" id="demo-message" placeholder="Enter your message" rows="6"></textarea>
+                <textarea name="message" id="demo-message" placeholder="Enter your message" rows="6"></textarea>
             </div>
             <div class="col-12">
                 <ul class="actions">
-                    <li><button type="submit" value="Send Message" class="primary">
+                    <li><button href= "/contact" type="submit" value="Send Message" class="primary">
                         Submit
                         </button>
                     </li>
                 </ul>
             </div>
         </div>
-    </form>
-}
+</form>
 
-#embed("base")
+
+
