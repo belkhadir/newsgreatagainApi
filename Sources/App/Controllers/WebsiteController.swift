@@ -8,7 +8,7 @@ struct WebsiteController: RouteCollection {
     func boot(router: Router) throws {
         router.get(use: indexHandler)
         router.get("contact", use: redirectContactMe)
-        router.post(CreatContactMe.self, at: "contact", use: createContackMe)
+        router.post(CreatContactMe.self, at: "/", use: createContackMe)
     }
     
     func indexHandler(_ req: Request) throws -> Future<View> {
@@ -25,7 +25,7 @@ struct WebsiteController: RouteCollection {
     
     func redirectContactMe(_ req: Request) throws -> Future<View> {
         let context = IndexContext(title: "Contact US.")
-        return try req.view().render("createContactMe", context)
+        return try req.view().render("/", context)
     }
 }
 
