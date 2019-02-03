@@ -3,6 +3,7 @@
     <head>
         <title>#(title)</title>
         <meta charset="utf-8" />
+        <meta name= "title" content="News great again. Top daily short news summaries.">
         <meta name="description" content="Swipe through all the breaking headlines from around the globe. The ultimate short and fast news app that keeps you informed without wasting your time!">
         <meta name ="keywords" content="global,headline,world,english,titles,real,smart,fast,local,simple,easy,breaking,us,today,best,latest">
         <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
