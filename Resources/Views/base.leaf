@@ -3,6 +3,8 @@
     <head>
         <title>#(title)</title>
         <meta charset="utf-8" />
+        <meta description="" content="Stop wasting time reading everyday news. It only wastes your time unnecessarily. Instead, go with the fast & intuitive News Great Again – the news summaries app. We reimagined news reading and made it simple so you can stay up to date with fast, short and summarized headlines and titles. ">
+        <meta name ="keywords" content="global,headline,world,english,titles,real,smart,fast,local,simple,easy,breaking,us,today,best,latest">
         <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
         <link rel="stylesheet" href="/assets/css/main.css" />
         <noscript><link rel="stylesheet" href="/assets/css/noscript.css" /></noscript>
