@@ -24,6 +24,7 @@ final class UserController: RouteCollection {
         authRoutes.get(User.parameter, "favorite", use: getFavorite)
         authRoutes.post(User.parameter, "referal", User.parameter, use: addReferal)
         authRoutes.get(User.parameter, "orders",  use: getOrders)
+        authRoutes.delete(User.parameter, use: deleteAccount)
     }
     
     func register(_ req: Request) throws -> Future<User.Public> {
@@ -133,6 +134,12 @@ final class UserController: RouteCollection {
     func getOrders(_ req: Request) throws -> Future<[Order]> {
         return try req.parameters.next(User.self).flatMap(to: [Order].self) { (user) in
             return try user.orders.query(on: req).all()
+        }
+    }
+    
+    func deleteAccount(_ req: Request) throws -> Future<HTTPStatus> {
+        return try req.parameters.next(User.self).flatMap { user  in
+            return user.delete(on: req).transform(to: HTTPStatus.noContent)
         }
     }
     
